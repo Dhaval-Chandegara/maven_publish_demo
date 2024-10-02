@@ -1,0 +1,106 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    id 'maven-publish'
+    id 'signing'
+}
+
+android {
+    namespace 'com.dc.mylibrary'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+//    publishing {
+//        publishToMavenLocal {
+//            release(MavenPublication) {
+//                from components.getByName("release")
+//            }
+//        }
+//    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components["release"]
+                groupId = 'io.github.dhavalchandegara'
+                artifactId = 'toastutils'
+                version = '1.0.0'
+
+                // Include sources and javadoc (optional)
+//                artifacts {
+//                    releaseSourcesJar
+//                }
+
+                pom {
+                    name = "ToastUtils"
+                    description = "This is Common Toast Utils Library"
+                    url = "https://github.com/dhavalchandegara/dhavalchandegara.github.io.git"
+
+                    licenses {
+                        license {
+                            name = "The Apache License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = "dhavalchandegara"
+                            name = "Dhaval Chandegara"
+                            email = "dhaval.easternts@gmail.com"
+                        }
+                    }
+
+                    scm {
+                        connection = "https://github.com/dhavalchandegara/dhavalchandegara.github.io.git"
+                        url = "https://github.com/dhavalchandegara/dhavalchandegara.github.io.git"
+                        developerConnection = "https://github.com/dhavalchandegara/dhavalchandegara.github.io.git"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                // Publish to a local folder of your choice
+                url = uri("${project.rootDir}/mavencentral")
+            }
+        }
+    }
+
+    signing {
+        sign(publishing.publications.mavenJava)
+    }
+}
